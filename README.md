@@ -43,7 +43,6 @@ Create a `.env` file and paste this:
 POLLINATIONS_API_KEY=your_key_here
 BOT_TOKEN=your_bot_token_here
 SERVER_ID=your_server_id_here
-
 ```
 
 ---
