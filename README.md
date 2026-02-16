@@ -37,17 +37,26 @@ POLLINATIONS_API_KEY=your_key_here
 BOT_TOKEN=your_bot_token_here
 SERVER_ID=your_server_id_here
 
+```
+---
+
+
 ### 3. installation
 open your terminal in the project folder and run:
 
-```Bash
+```bash
 npm install
 npm start
-tech specs
-* language: node.js
 
-* library: discord.js v14
+```
 
-* api: pollinations.ai (openai, gemini, qwen, nova)
+---
 
-* logic: native https / cURL style
+## tech specs
+
+* **language**: node.js
+* **library**: discord.js v14
+* **API**: pollinations.ai (openai, gemini, qwen, nova)
+* **logic**: native https / cURL style
+
+---
