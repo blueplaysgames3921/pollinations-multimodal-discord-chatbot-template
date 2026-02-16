@@ -28,6 +28,8 @@ you need to create a `.env` file in the main folder with these three values:
     * *note: you must enable **message content intent** under the bot tab or it won't work.*
 * **SERVER_ID**: right-click your server icon in discord and "copy server id" (enable developer mode in discord settings first).
 * **POLLINATIONS_API_KEY**: your api key from [pollinations.ai](https://pollinations.ai/).
+* **HOSTING SERVICE**: recommended RAM: 64 to 128 MB.
+---
 
 ### 2. configuration
 create a `.env` file and paste this:
