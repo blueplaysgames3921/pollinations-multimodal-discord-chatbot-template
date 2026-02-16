@@ -57,8 +57,8 @@ Best for testing or if you keep your computer on.
 1. Open your terminal/command prompt.
 2. Clone the repo:
 ```bash
-git clone https://github.com/blueplaysgame3921/pollinations-multimodal-discord-chatbot.git
-cd pollinations-multimodal-discord-chatbot
+git clone https://github.com/blueplaysgames3921/pollinations-multimodal-discord-chatbot-template.git
+cd pollinations-multimodal-discord-chatbot-template
 
 ```
 
