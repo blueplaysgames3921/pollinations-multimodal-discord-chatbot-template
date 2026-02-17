@@ -1,5 +1,6 @@
-const { Client, GatewayIntentBits, Partials } = require('discord.js');
+const { Client, GatewayIntentBits, Partials, AttachmentBuilder } = require('discord.js');
 const https = require('https');
+const { MsEdgeTTS, OUTPUT_FORMAT } = require('msedge-tts');
 require('dotenv').config();
 
 const client = new Client({
@@ -7,99 +8,119 @@ const client = new Client({
     partials: [Partials.Channel]
 });
 
+const tts = new MsEdgeTTS();
 let msgCounter = 0;
-let targetCount = Math.floor(Math.random() * 6) + 10;
+let nextTrigger = Math.floor(Math.random() * (parseInt(process.env.NATURAL_MAX) - parseInt(process.env.NATURAL_MIN) + 1)) + parseInt(process.env.NATURAL_MIN);
 
-async function askAI(messages, model) {
+async function callPollinations(messages, model, isImage = false) {
     return new Promise((resolve, reject) => {
         const data = JSON.stringify({
             model: model,
             messages: messages,
-            seed: Math.floor(Math.random() * 99999)
+            seed: Math.floor(Math.random() * 1000000),
+            temperature: parseFloat(process.env.CREATIVITY_LEVEL) || 0.7
         });
 
         const options = {
             hostname: 'gen.pollinations.ai',
-            path: '/v1/chat/completions',
-            method: 'POST',
+            path: isImage ? `/image/${encodeURIComponent(messages)}` : '/v1/chat/completions',
+            method: isImage ? 'GET' : 'POST',
             headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${process.env.POLLINATIONS_API_KEY}`,
-                'Content-Length': Buffer.byteLength(data)
+                'Authorization': `Bearer ${process.env.POLLINATIONS_KEY}`,
+                'Content-Type': 'application/json'
             }
         };
 
         const req = https.request(options, (res) => {
-            let body = '';
-            res.on('data', (chunk) => body += chunk);
+            let body = [];
+            res.on('data', (chunk) => body.push(chunk));
             res.on('end', () => {
                 try {
-                    const json = JSON.parse(body);
+                    if (isImage) return resolve(Buffer.concat(body));
+                    const json = JSON.parse(Buffer.concat(body).toString());
                     resolve(json.choices[0].message.content);
-                } catch (e) {
-                    reject('api glitching, try again later');
-                }
+                } catch (e) { reject('system error, try again'); }
             });
         });
-
-        req.on('error', (e) => reject(e.message));
-        req.write(data);
+        if (!isImage) req.write(data);
+        req.on('error', (e) => reject(e));
         req.end();
     });
 }
 
 client.on('messageCreate', async (message) => {
-    if (message.author.bot || message.guildId !== process.env.SERVER_ID) return;
+    if (message.author.bot || (process.env.SERVER_ID && message.guildId !== process.env.SERVER_ID)) return;
 
-    const isPinged = message.mentions.has(client.user);
-    msgCounter++;
-
-    if (!isPinged && msgCounter < targetCount) return;
-    
-    msgCounter = 0;
-    targetCount = Math.floor(Math.random() * 6) + 10;
-
-    const channelMessages = await message.channel.messages.fetch({ limit: 20 });
-    const history = Array.from(channelMessages.values()).reverse().map(m => ({
-        role: m.author.id === client.user.id ? 'assistant' : 'user',
-        content: m.content || "attached an image"
-    }));
-
-    let selectedModel = 'nova-fast';
-    let persona = "be a middle ground, smart but unimpressed. talk in lowercase. be spicy and fight back if the user is being mid.";
-    
-    const content = message.content.toLowerCase();
-    const tokens = message.content.split(/\s+/).length;
-    const hasImage = message.attachments.size > 0;
-
-    if (hasImage) {
-        selectedModel = 'gemini-fast';
-        persona = "you are the eyes. describe what you see with absolute sass. talk in lowercase. stay helpful but act like it's a chore to look for them.";
-        const imgUrl = message.attachments.first().url;
-        history[history.length - 1].content = [
-            { type: "text", text: message.content || "what is this?" },
-            { type: "image_url", image_url: { url: imgUrl } }
-        ];
-    } else if (tokens < 30) {
-        selectedModel = 'qwen-character';
-        persona = "be extremely lazy and casual. use very few words. lowercase only. if they annoy you, roast them slightly. don't try hard.";
-    } else if (tokens >= 100) {
-        const deepWords = ['analyze', 'story', 'explain', 'compare', 'deep', 'think', 'research', 'logic'];
-        if (deepWords.some(w => content.includes(w))) {
-            selectedModel = 'openai';
-            persona = "you're the big brain now. be helpful but keep that spicy edge. lowercase only. act like you're way smarter than the user but still explain it because you're nice like that.";
-        }
+    if (message.content === '!botcheck' && message.author.id === process.env.OWNER_ID) {
+        const options = { hostname: 'gen.pollinations.ai', path: '/account/balance', headers: { 'Authorization': `Bearer ${process.env.POLLINATIONS_KEY}` } };
+        https.get(options, (res) => {
+            let data = '';
+            res.on('data', d => data += d);
+            res.on('end', () => {
+                const bal = JSON.parse(data);
+                message.reply(`pollen balance: ${bal.balance || 0}`);
+            });
+        }).on('error', () => message.reply('error fetching balance'));
+        return;
     }
 
-    history.unshift({ role: 'system', content: `${persona} ALWAYS respond in lowercase letters only. keep a bit of a fighting spirit and spice in your tone.` });
+    const isMentioned = message.mentions.has(client.user);
+    msgCounter++;
+
+    if (!isMentioned && msgCounter < nextTrigger) return;
+    msgCounter = 0;
+    nextTrigger = Math.floor(Math.random() * (parseInt(process.env.NATURAL_MAX) - parseInt(process.env.NATURAL_MIN) + 1)) + parseInt(process.env.NATURAL_MIN);
 
     try {
         await message.channel.sendTyping();
-        const response = await askAI(history, selectedModel);
-        await message.reply(response.toLowerCase());
-    } catch (err) {
-        console.error(err);
-    }
+        const rawLogs = await message.channel.messages.fetch({ limit: 30 });
+        const history = rawLogs.reverse().map(m => ({
+            role: m.author.id === client.user.id ? 'assistant' : 'user',
+            content: m.content
+        }));
+
+        let selectedModel = 'nova-fast';
+        let prompt = message.content;
+        const tokens = prompt.length / 4;
+
+        if (message.attachments.size > 0 && process.env.ENABLE_VISION === 'true') {
+            selectedModel = 'gemini-fast';
+            history[history.length - 1].content = [
+                { type: "text", text: prompt || "analyze this" },
+                { type: "image_url", image_url: { url: message.attachments.first().url } }
+            ];
+        } else if (prompt.toLowerCase().startsWith('draw:') && process.env.ENABLE_IMAGE_GEN === 'true') {
+            const imgBuffer = await callPollinations(prompt.split('draw:')[1], 'flux', true);
+            return message.reply({ files: [new AttachmentBuilder(imgBuffer, { name: 'gen.png' })] });
+        } else if (tokens < 30) {
+            selectedModel = 'qwen-character';
+        } else if (tokens > 100 || /analyze|complex|logic|research/i.test(prompt)) {
+            selectedModel = 'openai';
+        } else if (/code|script|function|python|js/i.test(prompt)) {
+            selectedModel = 'qwen-coder';
+        }
+
+        const sysPersona = `${process.env.SYSTEM_PROMPT} Backstory: ${process.env.BACKSTORY}. Hobbies: ${process.env.HOBBIES}. Dislikes: ${process.env.DISLIKES}. Your favorite users: ${process.env.LIKED_USERS}.`;
+        history.unshift({ role: 'system', content: sysPersona });
+
+        let response = await callPollinations(history, selectedModel);
+
+        if (selectedModel === 'qwen-character') {
+            response = response.split('\n')[0].replace(/[^\x00-\x7F]/g, "");
+        }
+
+        if (selectedModel !== 'openai' && process.env.CASUAL_MODE === 'true') {
+            response = response.toLowerCase();
+        }
+
+        if (process.env.ENABLE_TTS === 'true' && (prompt.includes('speak') || prompt.includes('voice'))) {
+            await tts.setMetadata("en-US-AriaNeural", OUTPUT_FORMAT.WEBM_24KHZ_16BIT_MONO_OPUS);
+            const { audioFilePath } = await tts.toFile("./tmp_voice.mp3", response);
+            return message.reply({ content: response, files: [audioFilePath] });
+        }
+
+        await message.reply(response);
+    } catch (err) { console.error('error handled'); }
 });
 
 client.login(process.env.BOT_TOKEN);
