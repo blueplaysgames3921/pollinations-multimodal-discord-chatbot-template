@@ -1,4 +1,4 @@
-# Pollinations Multimodal Discord Chatbot
+# Multimodal Discord Chatbot
 
 A public chatbot template designed to be casual, helpful, lazy, and occasionally a bit of a jerk. It switches between four different AI models depending on what you say and how much you talk.
 
