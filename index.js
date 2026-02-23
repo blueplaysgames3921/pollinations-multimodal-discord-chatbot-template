@@ -10,7 +10,10 @@ const client = new Client({
 
 const tts = new MsEdgeTTS();
 let msgCounter = 0;
-let nextTrigger = Math.floor(Math.random() * (parseInt(process.env.NATURAL_MAX) - parseInt(process.env.NATURAL_MIN) + 1)) + parseInt(process.env.NATURAL_MIN);
+// Calculate range based on ENV
+const min = parseInt(process.env.NATURAL_MIN) || 5;
+const max = parseInt(process.env.NATURAL_MAX) || 20;
+let nextTrigger = Math.floor(Math.random() * (max - min + 1)) + min;
 
 async function callPollinations(messages, model, isImage = false) {
     return new Promise((resolve, reject) => {
@@ -23,10 +26,10 @@ async function callPollinations(messages, model, isImage = false) {
 
         const options = {
             hostname: 'gen.pollinations.ai',
-            path: isImage ? `/image/${encodeURIComponent(messages)}` : '/v1/chat/completions',
+            path: isImage ? \`/image/\${encodeURIComponent(messages)}\` : '/v1/chat/completions',
             method: isImage ? 'GET' : 'POST',
             headers: {
-                'Authorization': `Bearer ${process.env.POLLINATIONS_KEY}`,
+                'Authorization': \`Bearer \${process.env.POLLINATIONS_KEY}\`,
                 'Content-Type': 'application/json'
             }
         };
@@ -51,14 +54,15 @@ async function callPollinations(messages, model, isImage = false) {
 client.on('messageCreate', async (message) => {
     if (message.author.bot || (process.env.SERVER_ID && message.guildId !== process.env.SERVER_ID)) return;
 
+    // Owner only bot check
     if (message.content === '!botcheck' && message.author.id === process.env.OWNER_ID) {
-        const options = { hostname: 'gen.pollinations.ai', path: '/account/balance', headers: { 'Authorization': `Bearer ${process.env.POLLINATIONS_KEY}` } };
+        const options = { hostname: 'gen.pollinations.ai', path: '/account/balance', headers: { 'Authorization': \`Bearer \${process.env.POLLINATIONS_KEY}\` } };
         https.get(options, (res) => {
             let data = '';
             res.on('data', d => data += d);
             res.on('end', () => {
                 const bal = JSON.parse(data);
-                message.reply(`pollen balance: ${bal.balance || 0}`);
+                message.reply(\`pollen balance: \${bal.balance || 0}\`);
             });
         }).on('error', () => message.reply('error fetching balance'));
         return;
@@ -68,8 +72,10 @@ client.on('messageCreate', async (message) => {
     msgCounter++;
 
     if (!isMentioned && msgCounter < nextTrigger) return;
+    
+    // Reset counter
     msgCounter = 0;
-    nextTrigger = Math.floor(Math.random() * (parseInt(process.env.NATURAL_MAX) - parseInt(process.env.NATURAL_MIN) + 1)) + parseInt(process.env.NATURAL_MIN);
+    nextTrigger = Math.floor(Math.random() * (max - min + 1)) + min;
 
     try {
         await message.channel.sendTyping();
@@ -83,6 +89,7 @@ client.on('messageCreate', async (message) => {
         let prompt = message.content;
         const tokens = prompt.length / 4;
 
+        // Model Routing
         if (message.attachments.size > 0 && process.env.ENABLE_VISION === 'true') {
             selectedModel = 'gemini-fast';
             history[history.length - 1].content = [
@@ -100,13 +107,14 @@ client.on('messageCreate', async (message) => {
             selectedModel = 'qwen-coder';
         }
 
-        const sysPersona = `${process.env.SYSTEM_PROMPT} Backstory: ${process.env.BACKSTORY}. Hobbies: ${process.env.HOBBIES}. Dislikes: ${process.env.DISLIKES}. Your favorite users: ${process.env.LIKED_USERS}.`;
+        const sysPersona = \`\${process.env.SYSTEM_PROMPT} Backstory: \${process.env.BACKSTORY}. Hobbies: \${process.env.HOBBIES}. Dislikes: \${process.env.DISLIKES}. Your favorite users: \${process.env.LIKED_USERS}.\`;
         history.unshift({ role: 'system', content: sysPersona });
 
         let response = await callPollinations(history, selectedModel);
 
         if (selectedModel === 'qwen-character') {
-            response = response.split('\n')[0].replace(/[^\x00-\x7F]/g, "");
+            // Regex to filter non-latin characters roughly and keep it one line
+            response = response.split('\\n')[0].replace(/[^\\x00-\\x7F]/g, "");
         }
 
         if (selectedModel !== 'openai' && process.env.CASUAL_MODE === 'true') {
