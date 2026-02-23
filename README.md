@@ -1,53 +1,68 @@
-# 🤖 BotForgeX: Multimodal Neural Engine
+# 🌀 BotForgeX: Multimodal Neural Engine
 **Architected by blueplaysgames3921 | Powered by Pollinations.AI**
 
-This is a high-performance, multimodal Discord chatbot generated via the **BotForgeX Factory**. This bot doesn't just process text—it utilizes a "Neural Routing" system to switch between specialized AI models based on the complexity and nature of user input.
+Congratulations. You have generated a custom instance of the BotForgeX framework. This bot is currently configured with the unique persona, backstory, and behavioral logic you defined in the Forge.
 
 ---
 
-## ⚡ Quick Start (Windows Local)
-1. **Configure Identity**: Locate \`env.txt\` in this folder. Open it and paste your **BOT_TOKEN**, **POLLINATIONS_KEY**, and Discord IDs.
-2. **Launch**: Locate the file \`INSTALL_AND_LAUNCH.txt\`. 
-   - **Important**: Rename this file to \`launch.cmd\`.
-   - Right-click and **Run as Administrator**.
-   - The script will automatically verify your Node.js version, install all dependencies, and ignite the bot core.
+## ⚡ Deployment: Quick Start (Windows)
+If you are hosting locally on Windows, we have provided an automated bridge to get you online instantly.
+
+1. **Configure Identity**: Open \`env.txt\` and paste your **BOT_TOKEN** and **POLLINATIONS_KEY**.
+2. **Execute Setup**: Right-click \`INSTALL_AND_LAUNCH.txt\`, rename it to \`launch.cmd\`, and **Run as Administrator**.
+3. **Automated Logic**: The script will verify your Node.js version, install all neural dependencies (discord.js, msedge-tts), and ignite the bot core.
 
 ---
 
-## 🛠 Manual Setup & Hosting
-If you are on Linux, Mac, or using a VPS (Railway, AWS, DigitalOcean):
-1. **Environment**: Rename \`env.txt\` to \`.env\`.
-2. **Install**: Run \`npm install\` in your terminal.
-3. **Execute**: Run \`npm start\` or use PM2 (\`pm2 start index.js\`) for 24/7 uptime.
+## 🛠 Manual Configuration & Variables
+If you prefer manual setup or are using Linux/MacOS, map your credentials in the \`.env\` file (formerly \`env.txt\`):
+
+| Variable | Description |
+| :--- | :--- |
+| **BOT_TOKEN** | Your bot's secret key from the [Discord Developer Portal](https://discord.com/developers/applications). |
+| **POLLINATIONS_KEY** | Your API access key from [pollinations.ai](https://pollinations.ai/). |
+| **SERVER_ID** | (Optional) Restricts the bot to one specific server. |
+| **OWNER_ID** | Your Discord User ID. Enables the \`!botcheck\` debug command. |
+
+*Note: Ensure **Message Content Intent** is toggled ON in your Discord Developer Dashboard.*
 
 ---
 
-## 🧠 Neural Routing Logic
-Your bot has been configured with a "Dynamic Brain" that switches models based on context:
+## 🧠 Core Intelligence & Logic
+Your bot doesn't just "chat"—it thinks. The BotForgeX engine uses **Contextual Model Routing** to handle different tasks:
 
-* **Vision (Gemini-Fast)**: Triggers automatically when an image is uploaded. It analyzes the visual data through your bot's specific persona.
-* **Imaging (Flux)**: Triggers when a message starts with \`draw:\`. Generates high-fidelity images directly in the chat.
-* **Voice (Edge-TTS)**: If enabled, the bot generates high-quality audio responses when it detects keywords like "speak" or "voice."
-* **Short-Burst (Qwen-Character)**: Handles rapid-fire, short messages (<30 tokens) with low-latency, casual responses.
-* **Complex Logic (OpenAI/Qwen-Coder)**: Engages when the bot detects code requests or deep analytical prompts (>100 tokens).
-* **Default State (Nova-Fast)**: The balanced engine for standard conversation.
+* **Vision (Gemini-Fast)**: Triggered when an image is uploaded. The bot "sees" and analyzes visual data.
+* **Creative Imaging (Flux)**: Triggered by the \`draw:\` prefix. Generates high-fidelity AI imagery.
+* **Rapid Response (Qwen-Character)**: Optimized for short bursts and casual banter (<30 tokens).
+* **Deep Analysis (OpenAI)**: Engages for complex logic, storytelling, or research-heavy prompts (>100 tokens).
+* **Neural Voice (Edge-TTS)**: If enabled, the bot can generate high-quality audio responses when you ask it to "speak" or "talk."
 
----
-
-## 🎭 Persona & Behavior
-**This bot is hard-coded with the custom personality you defined in the BotForgeX Factory.** - **Casual Mode**: If enabled, the bot will communicate in lowercase-only to maintain a relaxed, "human" feel.
-- **Natural Triggers**: The bot is designed to be "social." It doesn't just wait for pings; it monitors conversation flow and will randomly contribute based on the message frequency thresholds you set during configuration.
-- **Contextual Memory**: The engine fetches and analyzes the last 30 messages in a channel to ensure its responses aren't just accurate, but relevant to the ongoing "vibe."
+### Behavioral Protocols
+- **Persona Persistence**: The bot will strictly follow the persona and backstory you injected during the generation process.
+- **Natural Triggers**: The bot monitors channel activity and will autonomously join the conversation every 5–20 messages to keep the "vibe" alive.
+- **Context Memory**: It maintains a rolling buffer of the last 30 messages to ensure continuity in complex discussions.
 
 ---
 
-## 🛰 Tech Specs
-- **Engine**: Node.js / Discord.js v14
-- **Architecture**: Native \`https\` logic (Zero-Axios footprint for speed)
-- **Memory Profile**: Ultra-lightweight (64MB - 128MB RAM)
-- **API Uplink**: Pollinations.AI Neural Gateway
+## 🌐 24/7 Hosting Solutions
 
-> **Safety Warning**: Keep your \`.env\` or \`env.txt\` file private. This file contains your Bot Token. If leaked, unauthorized users can control your bot.
+### Method A: Railway.app (Recommended)
+1. Upload these files to a private GitHub Repository.
+2. Connect the repo to [Railway.app](https://railway.app/).
+3. Add your \`.env\` variables to the Railway "Variables" tab.
+4. **Build Command**: \`npm install\` | **Start Command**: \`node index.js\`
+
+### Method B: VPS / Dedicated Server (Ubuntu/Linux)
+1. Transfer files via SFTP/SCP.
+2. Install PM2 to keep the process alive: \`npm install pm2 -g\`.
+3. Launch: \`pm2 start index.js --name "botforgex-bot"\`.
 
 ---
-*Generated by BotForgeX Labs — The Architect's Choice for AI Deployment.*
+
+## 🛡 Security & Safety Measures
+- **Local Integrity**: This bot uses native Node.js \`https\` logic. No external logging or data-harvesting middlewares are used.
+- **Credential Safety**: Never share your \`.env\` or \`env.txt\` file. If your **BOT_TOKEN** is leaked, reset it immediately in the Discord Developer Portal.
+- **Process Isolation**: When running the automated launcher, ensure you trust the directory permissions. The launcher is designed to only modify files within its own folder.
+
+---
+*Generated via BotForgeX Labs. Stay creative.*
