@@ -1,13 +1,10 @@
 {
-  "name": "pollinations-multimodal-chatbot",
+  "name": "botforgex-universal-bot",
   "version": "1.0.0",
-  "description": "A multi-model Discord AI chatbot using Pollinations API with dynamic persona switching.",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
   },
-  "author": "blueplaysgames3921",
-  "license": "MIT",
   "dependencies": {
     "discord.js": "^14.14.1",
     "dotenv": "^16.4.5",
