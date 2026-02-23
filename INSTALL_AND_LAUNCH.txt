@@ -1,0 +1,111 @@
+@echo off
+:: Set terminal size and encoding
+mode con: cols=80 lines=30
+chcp 65001 >nul
+cd /d "%~dp0"
+title BotForgeX - Universal Bot Launcher
+color 0b
+cls
+
+echo ================================================================================
+echo      BotForgeX Discord Bot Launcher
+echo      Created by: blueplaysgames3921
+echo      Powered by Pollinations.AI
+echo ================================================================================
+echo.
+echo  WHAT THIS DOES:
+echo  - Validates Node.js Environment (v18+)
+echo  - Verifies Network Connectivity
+echo  - Auto-configures Identity Files
+echo  - Installs Dependencies and Launches Bot
+echo.
+echo  PREREQUISITES:
+echo  1. Fill in your keys in 'env.txt'
+echo  2. Ensure your Bot Token is valid
+echo.
+echo ================================================================================
+echo.
+pause
+
+:: 1. Check for Node.js Existence & Version (v18+)
+echo [SYSTEM] Verifying Node.js environment...
+node -v >nul 2>&1
+if %errorlevel% neq 0 (
+    echo [!] ERROR: Node.js is NOT installed.
+    echo Opening https://nodejs.org/ ...
+    start https://nodejs.org/
+    echo Please install the LTS version and RESTART your PC.
+    pause
+    exit
+)
+
+:: Robust Version Check
+for /f "tokens=1,2,3 delims=.v" %%a in ('node -v') do set node_major=%%a
+if %node_major% lss 18 (
+    echo [!] ERROR: Outdated Node.js version detected (v%node_major%).
+    echo BotForgeX requires Node.js v18 or higher to handle modern discord.js.
+    echo Opening https://nodejs.org/ to update...
+    start https://nodejs.org/
+    pause
+    exit
+)
+echo [OK] Node.js v%node_major% verified.
+
+:: 2. Check Internet/npm Registry
+echo [SYSTEM] Testing neural uplink (npm registry)...
+call npm ping >nul 2>&1
+if %errorlevel% neq 0 (
+    echo [!] ERROR: No internet connection or npm registry unreachable.
+    echo Please check your connection and try again.
+    pause
+    exit
+)
+echo [OK] Uplink established.
+
+:: 3. File Extension Check (.env logic)
+if not exist ".env" (
+    if exist "env.txt" (
+        echo [!] ALERT: Identity file 'env.txt' detected.
+        echo [SYSTEM] Auto-converting env.txt to .env...
+        rename env.txt .env
+        echo [OK] Configuration mapped successfully.
+    ) else (
+        echo [!] CRITICAL ERROR: Identity file (.env) is missing!
+        echo Please ensure 'env.txt' is in this folder.
+        pause
+        exit
+    )
+)
+
+:: 4. Dependency Management
+echo.
+echo [1/2] Syncing dependencies...
+echo (This might take a minute on the first run)
+call npm install --no-audit --no-fund
+if %errorlevel% neq 0 (
+    echo [!] npm install failed. Check folder permissions.
+    pause
+    exit
+)
+
+:: 5. Execution Logic
+echo.
+echo [2/2] Igniting Bot Core...
+echo ================================================================================
+echo      BOT IS NOW RUNNING ONLINE
+echo      Press [Ctrl+C] to shutdown the process
+echo ================================================================================
+echo.
+
+:: Check for Start Script in package.json
+findstr /C:"\\"start\\":" package.json >nul
+if %errorlevel% neq 0 (
+    echo [!] No 'start' script found. Falling back to direct execution.
+    node index.js
+) else (
+    call npm start
+)
+
+echo.
+echo [SYSTEM] Core shutdown. Connection lost.
+pause
