@@ -1,109 +1,53 @@
-# Multimodal Discord Chatbot
+# 🤖 BotForgeX: Multimodal Neural Engine
+**Architected by blueplaysgames3921 | Powered by Pollinations.AI**
 
-A public chatbot template designed to be casual, helpful, lazy, and occasionally a bit of a jerk. It switches between four different AI models depending on what you say and how much you talk.
-
-## How it Works
-
-This bot doesn't just stick to one brain. It adapts based on context:
-
-* **Gemini-Fast**: Triggers when you upload an image. It acts as the "eyes," describing what it sees with sass.
-* **Qwen-Character**: Triggers for short messages (<30 tokens). It’s low-effort, lazy, and very casual.
-* **OpenAI**: Triggers for long, complex messages (>100 tokens) that include words like *analyze*, *story*, or *think*. It acts like an arrogant genius.
-* **Nova-Fast**: The default middle ground for everything else. Smart, unimpressed, and spicy.
-
-### Features
-
-* **Lowercase Only**: The bot is hard-coded to stay in character by using lowercase letters.
-* **Contextual Awareness**: It reads the last 20 messages in the channel to stay on track.
-* **Natural Triggers**: If not pinged, it will randomly jump into the conversation every 10 to 15 messages.
-* **No Axios**: Built using native Node.js `https` logic for a lightweight footprint.
+This is a high-performance, multimodal Discord chatbot generated via the **BotForgeX Factory**. This bot doesn't just process text—it utilizes a "Neural Routing" system to switch between specialized AI models based on the complexity and nature of user input.
 
 ---
 
-## Setup Guide
-
-### 1. Variables You Need
-
-You need to create a `.env` file in the main folder with these three values:
-
-* **BOT_TOKEN**: Get this from the [Discord Developer Portal](https://discord.com/developers/applications).
-* *Note: You must enable **Message Content Intent** under the "Bot" tab or the bot will be blind.*
-
-
-* **SERVER_ID**: Right-click your server icon in Discord and "Copy Server ID" (enable Developer Mode in Discord settings first).
-* **POLLINATIONS_API_KEY**: Your API key from [pollinations.ai](https://pollinations.ai/).
+## ⚡ Quick Start (Windows Local)
+1. **Configure Identity**: Locate \`env.txt\` in this folder. Open it and paste your **BOT_TOKEN**, **POLLINATIONS_KEY**, and Discord IDs.
+2. **Launch**: Locate the file \`INSTALL_AND_LAUNCH.txt\`. 
+   - **Important**: Rename this file to \`launch.cmd\`.
+   - Right-click and **Run as Administrator**.
+   - The script will automatically verify your Node.js version, install all dependencies, and ignite the bot core.
 
 ---
 
-### 2. Configuration
-
-Create a `.env` file and paste this:
-
-```text
-POLLINATIONS_API_KEY=your_key_here
-BOT_TOKEN=your_bot_token_here
-SERVER_ID=your_server_id_here
-```
+## 🛠 Manual Setup & Hosting
+If you are on Linux, Mac, or using a VPS (Railway, AWS, DigitalOcean):
+1. **Environment**: Rename \`env.txt\` to \`.env\`.
+2. **Install**: Run \`npm install\` in your terminal.
+3. **Execute**: Run \`npm start\` or use PM2 (\`pm2 start index.js\`) for 24/7 uptime.
 
 ---
 
-### 3. Installation & Hosting Methods
+## 🧠 Neural Routing Logic
+Your bot has been configured with a "Dynamic Brain" that switches models based on context:
 
-#### **Method A: Local Hosting (Your PC)**
-
-Best for testing or if you keep your computer on.
-
-1. Open your terminal/command prompt.
-2. Clone the repo:
-```bash
-git clone https://github.com/blueplaysgames3921/pollinations-multimodal-discord-chatbot-template.git
-cd pollinations-multimodal-discord-chatbot-template
-
-```
-
-
-3. Install dependencies and start:
-```bash
-npm install
-npm start
-
-```
-
-
-
-#### **Method B: Railway (Recommended for 24/7)**
-
-Railway is the most reliable "set and forget" service.
-
-1. Fork this repo to your own GitHub account.
-2. Log in to [Railway.app](https://railway.app/).
-3. Create a "New Project" and select "Deploy from GitHub repo."
-4. In the settings, add your `.env` variables (BOT_TOKEN, etc.).
-5. It will deploy automatically.
-
-#### **Method C: VPS / Dedicated Hosting (fps.ms / Oracle)**
-
-If you have a VPS or use a service like **fps.ms** (which offers free 128MB RAM tiers perfect for this bot):
-
-1. Upload the files via SFTP or `git clone`.
-2. Ensure you have Node.js installed on the server.
-3. Run `npm install` and use a process manager like **PM2** to keep it alive:
-```bash
-npm install pm2 -g
-pm2 start index.js --name "pollinations-bot"
-
-```
-
-
+* **Vision (Gemini-Fast)**: Triggers automatically when an image is uploaded. It analyzes the visual data through your bot's specific persona.
+* **Imaging (Flux)**: Triggers when a message starts with \`draw:\`. Generates high-fidelity images directly in the chat.
+* **Voice (Edge-TTS)**: If enabled, the bot generates high-quality audio responses when it detects keywords like "speak" or "voice."
+* **Short-Burst (Qwen-Character)**: Handles rapid-fire, short messages (<30 tokens) with low-latency, casual responses.
+* **Complex Logic (OpenAI/Qwen-Coder)**: Engages when the bot detects code requests or deep analytical prompts (>100 tokens).
+* **Default State (Nova-Fast)**: The balanced engine for standard conversation.
 
 ---
 
-## Tech Specs
+## 🎭 Persona & Behavior
+**This bot is hard-coded with the custom personality you defined in the BotForgeX Factory.** - **Casual Mode**: If enabled, the bot will communicate in lowercase-only to maintain a relaxed, "human" feel.
+- **Natural Triggers**: The bot is designed to be "social." It doesn't just wait for pings; it monitors conversation flow and will randomly contribute based on the message frequency thresholds you set during configuration.
+- **Contextual Memory**: The engine fetches and analyzes the last 30 messages in a channel to ensure its responses aren't just accurate, but relevant to the ongoing "vibe."
 
-* **Language**: Node.js
-* **Library**: discord.js v14
-* **API**: [pollinations.ai](https://pollinations.ai/)
-* **Logic**: Native `https` / cURL style
-* **Resource Usage**: 64MB - 128MB RAM (Very lightweight)
+---
 
-> **Note on Replit**: Replit has heavily restricted free hosting and blocks external "ping" services like UptimeRobot. If you use Replit, the bot will likely fall asleep when you close the tab unless you pay for a "Reserved VM." Use Railway or a VPS for better results.
+## 🛰 Tech Specs
+- **Engine**: Node.js / Discord.js v14
+- **Architecture**: Native \`https\` logic (Zero-Axios footprint for speed)
+- **Memory Profile**: Ultra-lightweight (64MB - 128MB RAM)
+- **API Uplink**: Pollinations.AI Neural Gateway
+
+> **Safety Warning**: Keep your \`.env\` or \`env.txt\` file private. This file contains your Bot Token. If leaked, unauthorized users can control your bot.
+
+---
+*Generated by BotForgeX Labs — The Architect's Choice for AI Deployment.*
